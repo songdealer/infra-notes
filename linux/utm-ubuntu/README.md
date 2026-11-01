@@ -191,6 +191,8 @@ Ubuntu 24.04 ...
 
 Forus의 원래 구성에서는 이 Intel MacBook의 Ubuntu에 **K3s Agent**를 설치하고, Mac Studio의 Linux 환경에 설치할 **K3s Server**에 연결합니다. 두 VM이 서로 통신할 수 있도록 네트워크 설정도 별도로 확인해야 합니다.
 
+다음 문서: [UTM 공유 네트워크를 브리지로 변경하기](./bridged-network.md) — 공유·브리지 모드의 차이부터 인터페이스 선택과 VM IP 확인까지 순서대로 진행합니다.
+
 ## 참고 자료
 
 - [UTM 공식 사이트](https://getutm.app/)
