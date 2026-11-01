@@ -7,6 +7,7 @@ Linux, Docker, Kubernetes 등 인프라 환경의 설치와 운영 과정을 정
 | 분야 | 문서 | 내용 |
 |---|---|---|
 | Linux | [linuxVM 설치방법](./linux/utm-ubuntu/README.md) | Intel MacBook에서 UTM으로 Ubuntu Server 설치, 스크린샷 5장, ISO 연결 해제와 재부팅 문제 해결 |
+| 네트워크 | [UTM 공유 네트워크를 브리지로 변경하기](./linux/utm-ubuntu/bridged-network.md) | 공유·브리지 모드의 차이, 인터페이스 선택, VM IP와 통신 확인, DHCP 예약 전 준비 |
 
 ## 문서와 프로젝트 코드 분리
 
@@ -23,6 +24,7 @@ infra-notes/
 └── linux/
     └── utm-ubuntu/
         ├── README.md
+        ├── bridged-network.md
         └── images/
             ├── 01-boot-menu.png
             ├── 02-install-confirmation.png
