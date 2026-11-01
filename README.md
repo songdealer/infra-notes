@@ -1,0 +1,34 @@
+# infra-notes
+
+Linux, Docker, Kubernetes 등 인프라 환경의 설치와 운영 과정을 정리하는 문서 저장소입니다. 실제 설정 순서, 확인한 화면, 문제 해결 방법을 함께 기록합니다.
+
+## 문서 목록
+
+| 분야 | 문서 | 내용 |
+|---|---|---|
+| Linux | [linuxVM 설치방법](./linux/utm-ubuntu/README.md) | Intel MacBook에서 UTM으로 Ubuntu Server 설치, 스크린샷 5장, ISO 연결 해제와 재부팅 문제 해결 |
+
+## 문서와 프로젝트 코드 분리
+
+- **공통 설치·운영 문서:** 이 `infra-notes` 저장소에서 기술별로 관리합니다.
+- **프로젝트 코드:** Forus 같은 프로젝트의 별도 저장소에서 관리합니다.
+- **프로젝트 전용 실행·배포 설정:** 해당 프로젝트 저장소의 `README.md` 또는 `docs/`에 두고, 공통 설치 절차는 이 저장소의 문서를 링크합니다.
+- **스크린샷:** 각 문서 옆의 `images/` 폴더에 저장하고 상대 경로로 연결합니다.
+
+## 저장소 구조
+
+```text
+infra-notes/
+├── README.md
+└── linux/
+    └── utm-ubuntu/
+        ├── README.md
+        └── images/
+            ├── 01-boot-menu.png
+            ├── 02-install-confirmation.png
+            ├── 03-reboot-cdrom.png
+            ├── 04-utm-cdrom-location.png
+            └── 05-eject-iso-menu.png
+```
+
+새 문서는 관련 기술 폴더 아래에 추가하고, 위의 문서 목록에 링크를 등록합니다.
