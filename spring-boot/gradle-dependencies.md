@@ -1,9 +1,10 @@
 # Spring Boot·Gradle 의존성 정리
 
 작성일: 2026-11-07  
+업데이트: webmvc·validation 추가 후 저장된 파일 확인  
 확인 기준: `chatDemo` 프로젝트의 저장된 `build.gradle`, `application.yaml`과 학습 중 확인한 공식 문서.
 
-Spring Boot 프로젝트를 만들고 Spring Initializr 생성 서비스를 구성하면서 사용한 의존성의 역할을 정리한다. 직접 선언한 항목과 웹 서버 실행을 위해 변경을 안내한 항목을 함께 기록한다.
+Spring Initializr 생성 서비스를 구성하고, 같은 `chatDemo` 프로젝트에서 채팅 API 개발을 준비하며 사용한 의존성을 정리한다. 현재 선언된 항목의 역할, 입력값 검증 방식, 채팅 서버용 정리 예시를 기록한다.
 
 ## 1. 현재 확인한 구성
 
@@ -13,20 +14,21 @@ Spring Boot 프로젝트를 만들고 Spring Initializr 생성 서비스를 구�
 - Spring Initializr BOM: 0.24.0
 - 빌드 스크립트: Gradle Groovy DSL
 
-문서 작성 시 저장된 `build.gradle`에는 아래 6개 항목이 선언되어 있었다. BOM도 포함한 선언 수이며, 실제 내려받는 라이브러리 수는 전이 의존성 때문에 더 많다.
+이번 업데이트에서 저장된 `build.gradle`의 **webmvc와 validation 추가를 확인했다.** 서로 다른 항목은 BOM을 포함해 9개이고, 기본 스타터가 두 번 적혀 있어 선언은 총 10줄이다. 실제 내려받는 라이브러리 수는 전이 의존성 때문에 더 많다.
 
 | 항목 | 선언 방식 | 역할 | 확인 상태 |
 |---|---|---|---|
-| `spring-boot-starter` | `implementation` | Spring Boot 기본 실행 기능 | 현재 선언됨 |
+| `spring-boot-starter` | `implementation` | Spring Boot 기본 실행 기능 | 현재 2회 중복 선언됨 |
 | `spring-boot-starter-test` | `testImplementation` | 테스트 작성·실행에 필요한 기본 도구 | 현재 선언됨 |
 | `junit-platform-launcher` | `testRuntimeOnly` | JUnit 테스트 탐색·실행을 연결하는 런처 | 현재 선언됨 |
-| `initializr-bom:0.24.0` | `implementation platform(...)` | Initializr 모듈 버전 관리 | 현재 선언됨 |
-| `initializr-web` | `implementation` | 생성 서비스의 HTTP API | 현재 선언됨 |
-| `initializr-generator-spring` | `implementation` | Spring Boot 프로젝트 파일 생성 규칙 | 현재 선언됨 |
-| `spring-boot-starter-web` | `implementation` | Spring MVC 기반 웹 기능 | 앞서 안내함. YAML의 생성 대상 의존성 목록에 있음 |
-| `spring-boot-starter-webmvc` | `implementation` | Boot 4에서 권장하는 Spring MVC 웹 스타터 | 변경을 안내했으나 저장된 Gradle 파일에는 아직 없음 |
+| `initializr-bom:0.24.0` | `implementation platform(...)` | Initializr 모듈 버전 관리 | 생성 서비스 연습 설정이 남아 있음 |
+| `initializr-web` | `implementation` | 생성 서비스의 HTTP API | 생성 서비스 연습 설정이 남아 있음 |
+| `initializr-generator-spring` | `implementation` | Spring Boot 프로젝트 파일 생성 규칙 | 생성 서비스 연습 설정이 남아 있음 |
+| `spring-boot-starter-web` | `implementation` | 기존 Spring MVC 웹 스타터 | 현재 선언됨. webmvc와 함께 남아 있음 |
+| `spring-boot-starter-webmvc` | `implementation` | Boot 4에서 권장하는 Spring MVC 웹 스타터 | 추가 확인됨 |
+| `spring-boot-starter-validation` | `implementation` | 입력값 검증 규칙과 검증 구현체 | 추가 확인됨 |
 
-의존성을 추가한 뒤의 서버 실행 성공이나 테스트 통과를 이 문서에서 확인한 것으로 간주하지 않는다.
+이번 업데이트는 파일에 선언된 내용을 확인한 기록이다. Gradle 동기화, 서버 재시작, 실제 검증 API 실행이나 테스트 통과를 추가로 수행한 기록은 아니다.
 
 ## 2. dependency와 starter란?
 
@@ -68,6 +70,53 @@ implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
 Deprecated는 즉시 사용할 수 없다는 의미가 아니라, 새 코드에서는 대체 항목 사용을 권장한다는 뜻이다.
 
+현재 프로젝트에는 `starter-webmvc`가 추가되어 있다. 함께 들어오는 `spring-web`의 `@GetMapping`, `@PostMapping` 등을 사용해 HTTP 메서드·주소와 자바 메서드를 연결할 수 있다. 예를 들어 `GET /rooms`는 조회용 메서드에, `POST /rooms`는 생성 요청 처리용 메서드에 연결할 수 있다. 실제 조회·생성 로직은 직접 작성한다.
+
+### spring-boot-starter-validation
+
+사용자가 보낸 값이 정해 둔 규칙에 맞는지 실행 중에 검사하기 위한 스타터다. Jakarta Validation API와 검증 구현체인 Hibernate Validator를 제공한다. 현재 프로젝트에는 다음 선언이 추가되어 있다.
+
+```groovy
+implementation 'org.springframework.boot:spring-boot-starter-validation'
+```
+
+현재 프로젝트의 Boot 버전 관리가 적용되므로 버전을 따로 지정하지 않는다. 웹 MVC 스타터만 추가했다고 검증 구현체까지 준비되는 것으로 가정하지 않고, 검증 스타터를 명시적으로 추가한다. [Spring Boot Validation 문서](https://docs.spring.io/spring-boot/reference/io/validation.html)
+
+Boot 4에서는 다음 import를 사용한다.
+
+```java
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+```
+
+| 어노테이션 | 역할 | 적용 예 |
+|---|---|---|
+| `@NotNull` | `null`을 허용하지 않는 제약 조건 | 필수로 받아야 하는 `Integer`, `Long` 등의 값 |
+| `@NotBlank` | `null`, 빈 문자열, 공백뿐인 문자열을 허용하지 않는 제약 조건 | 채팅방 이름, 메시지 내용 |
+| `@Valid` | 객체 내부에 선언된 제약 조건을 검증하도록 표시 | 컨트롤러의 `@RequestBody` 파라미터 |
+
+`@NotNull`과 `@NotBlank`를 문자열에 적용했을 때의 차이는 다음과 같다.
+
+| 값 | `@NotNull` | `@NotBlank` |
+|---|---|---|
+| `null` | 실패 | 실패 |
+| `""` | 통과 | 실패 |
+| `"   "` | 통과 | 실패 |
+| `"채팅방"` | 통과 | 통과 |
+
+`@NotBlank`는 문자열 계열에 사용한다. 숫자가 양수여야 한다는 규칙까지 필요하다면 `@NotNull`만으로는 충분하지 않다. [NotNull 정의](https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotNull.html), [NotBlank 정의](https://jakarta.ee/specifications/bean-validation/3.0/apidocs/jakarta/validation/constraints/NotBlank.html)
+
+일반적인 요청 검증은 다음 순서로 연결한다.
+
+1. 요청 데이터를 담는 DTO의 필드에 `@NotNull`, `@NotBlank` 등의 규칙을 선언한다.
+2. 컨트롤러에서 DTO를 받는 `@RequestBody` 파라미터에 `@Valid`를 붙인다.
+3. Spring MVC가 요청 데이터를 객체로 변환하고 내부 규칙을 검증한다.
+
+`@Valid` 자체는 “null 금지” 같은 제약 조건이 아니다. 필드에 규칙만 적거나 객체를 `new`로 생성한다고 모든 상황에서 자동 검증되는 것도 아니다. Spring MVC 요청 처리처럼 검증을 호출하는 경로가 필요하다. [Spring MVC 요청 검증](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html)
+
+`validation`은 **실행 중 들어오는 입력을 검사**하고, `starter-test`는 **개발자가 작성한 테스트로 코드의 동작을 확인**한다. 따라서 입력 검증은 `implementation`, 테스트 도구는 `testImplementation`으로 선언한다.
+
 ### spring-boot-starter-test
 
 테스트 코드에서 사용하는 기본 도구 모음이다. Spring Boot 테스트 지원과 JUnit Jupiter, AssertJ, Mockito 등의 도구를 이용할 수 있게 한다.
@@ -104,7 +153,7 @@ implementation platform('io.spring.initializr:initializr-bom:0.24.0')
 
 Gradle의 `platform(...)`으로 BOM을 가져오면 그 BOM이 관리하는 라이브러리들의 버전을 각 줄에 반복해서 적지 않아도 된다. BOM만 추가한다고 Initializr 모듈 전체가 설치되는 것은 아니다. 필요한 모듈은 별도로 선언한다. [Gradle BOM 설명](https://docs.gradle.org/current/userguide/platforms.html#sub:bom_import)
 
-Initializr **0.24.0**은 Spring Boot **4.0.x**를 기준으로 출시되었다. 현재 프로젝트의 Boot 4.1.2와의 실제 실행·생성 결과는 별도로 확인해야 한다. YAML의 `bootVersions`는 생성할 프로젝트의 목록이며, 생성 서비스 자체의 라이브러리 호환성을 바꾸지 않는다. [Initializr 0.24.0 릴리스](https://github.com/spring-io/initializr/releases/tag/v0.24.0)
+Initializr **0.24.0**은 Spring Boot **4.0.x**를 기준으로 출시되었다. Boot 4.1.2에서 생성 서비스의 메타데이터 응답은 학습 중 확인했으나, 모든 생성 조합과 생성된 프로젝트의 빌드 결과까지 검증한 것은 아니다. YAML의 `bootVersions`는 생성할 프로젝트의 목록이며, 생성 서비스 자체의 라이브러리 호환성을 바꾸지 않는다. [Initializr 0.24.0 릴리스](https://github.com/spring-io/initializr/releases/tag/v0.24.0)
 
 ### initializr-web
 
@@ -137,41 +186,55 @@ implementation 'io.spring.initializr:initializr-generator-spring'
 
 테스트 의존성은 일반적인 `bootJar`의 애플리케이션 실행 라이브러리에 포함되지 않는다. [Gradle Java 플러그인의 의존성 구성](https://docs.gradle.org/current/userguide/java_plugin.html)
 
-## 5. 현재 파일과 변경을 안내한 부분
+## 5. 현재 파일과 채팅 서버용 정리 예시
 
-작성 시점에 저장된 `build.gradle`의 의존성 블록이다. 들여쓰기만 정리했다.
+업데이트 시점에 저장된 `build.gradle`의 의존성 블록이다. 들여쓰기와 빈 줄만 정리했고, 중복 선언도 실제 파일 상태대로 기록했다.
 
 ```groovy
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
-
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     implementation platform('io.spring.initializr:initializr-bom:0.24.0')
     implementation 'io.spring.initializr:initializr-web'
     implementation 'io.spring.initializr:initializr-generator-spring'
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 ```
 
-웹 서버 구성을 위해 첫 번째 `implementation` 줄을 다음으로 변경하도록 안내했다.
+채팅 API 서버로 정리할 때 사용할 의존성 예시는 다음과 같다. **이 블록은 정리 예시이며, 현재 프로젝트 파일을 이렇게 수정했다는 의미는 아니다.**
 
 ```groovy
-implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 ```
 
-당시 화면에는 `Started ChatDemoApplication`이 있었지만 Tomcat 시작 로그가 없었다. 파일 확인에서도 웹 스타터가 빠져 있었고, 확인 시점에 8081 포트의 수신 서버도 없었다. 애플리케이션 초기화 성공과 HTTP 서버의 시작은 따로 확인해야 한다.
+웹 스타터가 가져오는 기본 스타터를 중복 선언할 필요는 없다. `starter-web`과 `starter-webmvc`를 함께 둘 필요도 없다. Initializr의 BOM과 두 모듈은 프로젝트 생성 서비스를 위한 것이므로, 채팅 서버로 전환할 때는 해당 생성 기능과 함께 정리할 수 있다.
+
+학습 초기에는 `Started ChatDemoApplication`이 있었지만 Tomcat 시작 로그가 없었고, 웹 스타터도 빠져 있었다. 이후 8081 포트에서 서버가 실행되고 Initializr 메타데이터 JSON이 반환되는 것을 확인했다. 그 응답은 프로젝트 생성 서비스의 응답이며, 채팅 API 구현 완료를 의미하지 않는다.
 
 ## 6. Gradle 설정과 YAML 설정의 차이
 
 | 위치 | 의미 |
 |---|---|
-| 현재 프로젝트의 `build.gradle → dependencies` | 지금 실행할 생성 서비스가 사용하는 라이브러리 |
+| 현재 프로젝트의 `build.gradle → dependencies` | 지금 실행할 애플리케이션이 사용하는 라이브러리 |
 | `application.yaml → initializr → dependencies` | 생성 화면에 제공할 의존성 선택 목록 |
-| `application.yaml → server.port` | 생성 서비스 자체가 사용할 포트 |
+| `application.yaml → server.port` | 현재 애플리케이션이 사용할 포트 |
 | `application.yaml → initializr → bootVersions` | 앞으로 생성할 프로젝트에서 선택 가능한 Boot 버전 |
 
-현재 YAML에는 생성 대상 의존성으로 `spring-boot-starter-web`이 적혀 있다. 생성 서비스의 Gradle 파일을 `starter-webmvc`로 바꾸더라도 YAML의 목록은 자동으로 바뀌지 않는다. Boot 4용 생성 프로젝트도 같은 권장 스타터를 사용하려면 해당 YAML 항목의 `artifactId`를 `spring-boot-starter-webmvc`로 별도로 수정한다.
+현재 YAML에는 `initializr:` 설정도 남아 있다. 생성 대상 의존성으로 `spring-boot-starter-web`이 적혀 있다. 생성 서비스의 Gradle 파일을 `starter-webmvc`로 바꾸더라도 YAML의 목록은 자동으로 바뀌지 않는다. 생성 서비스 연습을 계속할 경우, Boot 4용 생성 프로젝트도 같은 권장 스타터를 사용하려면 해당 YAML 항목의 `artifactId`를 `spring-boot-starter-webmvc`로 별도로 수정한다.
+
+`chatDemo`를 채팅 서버로 전환할 때는 Initializr 의존성을 정리하면서 YAML의 `initializr:` 아래 생성용 설정도 함께 정리한다. `spring.application.name`과 `server.port`는 현재 애플리케이션 실행 설정이므로 계속 사용할 수 있다.
 
 ## 7. plugins와 repositories도 함께 이해하기
 
@@ -212,8 +275,11 @@ repositories {
 # 테스트 실행에 사용하는 의존성 보기
 ./gradlew dependencies --configuration testRuntimeClasspath
 
-# Initializr 모듈의 실제 선택 버전과 선택 이유 보기
-./gradlew dependencyInsight --dependency initializr-web --configuration runtimeClasspath
+# 웹 MVC 스타터의 실제 선택 버전과 선택 이유 보기
+./gradlew dependencyInsight --dependency spring-boot-starter-webmvc --configuration runtimeClasspath
+
+# 검증 구현체가 연결되어 있는지 확인하기
+./gradlew dependencyInsight --dependency hibernate-validator --configuration runtimeClasspath
 
 # 테스트 실행
 ./gradlew test
