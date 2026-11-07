@@ -10,6 +10,7 @@ Linux, Docker, Kubernetes 등 인프라 환경의 설치와 운영 과정을 정
 | 네트워크 | [UTM 공유 네트워크를 브리지로 변경하기](./linux/utm-ubuntu/bridged-network.md) | 공유·브리지 모드의 차이, 인터페이스 선택, VM IP와 통신 확인, DHCP 예약 전 준비 |
 | Java | [Intel Mac에 Java 17 설치하고 버전 선택하기](./java/macos-java17-setup.md) | Homebrew 설치, Java 12에서 17로 전환, JAVA_HOME·PATH 설정과 명령별 설명 |
 | Spring Boot | [Gradle 의존성 정리](./spring-boot/gradle-dependencies.md) | 기본·웹·테스트 스타터, Initializr 모듈, BOM과 Gradle 선언 방식, 현재 적용 상태 |
+| 데이터베이스 | [MySQL과 PostgreSQL 비교](./database/mysql-vs-postgresql.md) | 채팅 프로젝트 관점의 공통점, ID 생성·중복 처리·문자열 비교·JSON 차이와 선택 기준 |
 
 ## 문서와 프로젝트 코드 분리
 
@@ -23,6 +24,8 @@ Linux, Docker, Kubernetes 등 인프라 환경의 설치와 운영 과정을 정
 ```text
 infra-notes/
 ├── README.md
+├── database/
+│   └── mysql-vs-postgresql.md
 ├── spring-boot/
 │   └── gradle-dependencies.md
 ├── java/
@@ -40,3 +43,4 @@ infra-notes/
 ```
 
 새 문서는 관련 기술 폴더 아래에 추가하고, 위의 문서 목록에 링크를 등록합니다.
+
